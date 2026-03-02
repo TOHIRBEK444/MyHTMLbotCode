@@ -3,57 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTunes Pro Search | 3D & Smooth UI</title>
+    <title>iTunes Pro | 3D Audio-Reactive AI Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Smooth Scroll & Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-track { background: #0f2027; }
         ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
         
-        body { margin: 0; overflow-x: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; overflow-x: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #0f2027; }
         
-        /* 3D Canvas Background */
-        #bg-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
-        }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
 
-        /* Glassmorphism Effect */
         .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(20, 30, 48, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
-        /* Hover Animations */
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card-hover:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-            border-color: rgba(59, 130, 246, 0.5);
-        }
+        .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-hover:hover { transform: translateY(-10px) scale(1.03); border-color: rgba(59, 130, 246, 0.6); z-index: 10;}
 
-        /* Loader Animation */
         .loader {
             border-top-color: #3b82f6;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
+            animation: spinner 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
         }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spinner { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col relative">
@@ -62,104 +41,114 @@
 
     <div class="z-10 container mx-auto px-4 py-8 flex-grow flex flex-col items-center">
         
-        <div class="w-full max-w-4xl text-center mb-10">
-            <h1 class="text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
-                <i class="fab fa-apple mr-2 text-white"></i>iTunes Pro Search
+        <div class="w-full max-w-4xl text-center mb-10 mt-10">
+            <h1 class="text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 tracking-tight drop-shadow-2xl">
+                <i class="fab fa-apple mr-2 text-white"></i>Audio-Reactive iTunes
             </h1>
-            <p class="text-gray-300 text-lg">Musiqa, kino, podkast va dasturlarni yuqori tezlikda qidiring</p>
+            <p class="text-gray-300 text-lg font-light">Musiqani tinglang va 3D olam unga qanday javob berishini ko'ring</p>
         </div>
 
-        <div class="glass w-full max-w-4xl p-6 rounded-2xl flex flex-col md:flex-row gap-4 mb-12">
+        <div class="glass w-full max-w-4xl p-4 rounded-3xl flex flex-col md:flex-row gap-4 mb-12 relative overflow-hidden">
             <div class="relative flex-grow">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-gray-400"></i>
-                </div>
-                <input type="text" id="searchInput" placeholder="Nimani qidiramiz? (masalan, Eminem, Interstellar...)" 
-                    class="w-full pl-11 pr-4 py-4 bg-gray-900 bg-opacity-50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg">
+                <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="searchInput" placeholder="Musiqa yoki ijodkorni izlang..." 
+                    class="w-full pl-14 pr-4 py-4 bg-black/30 border border-gray-600/50 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg">
             </div>
             
-            <select id="mediaType" class="bg-gray-900 bg-opacity-50 border border-gray-600 text-white py-4 px-6 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-lg appearance-none cursor-pointer">
-                <option value="all">Barchasi</option>
+            <select id="mediaType" class="bg-black/30 border border-gray-600/50 text-white py-4 px-6 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg cursor-pointer">
                 <option value="musicTrack">Musiqa</option>
                 <option value="movie">Kino</option>
                 <option value="podcast">Podkast</option>
-                <option value="software">Dastur (App)</option>
             </select>
 
-            <button id="searchBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-lg">
-                <span>Qidirish</span>
+            <button id="searchBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-[0_0_20px_rgba(147,51,234,0.5)] hover:shadow-[0_0_30px_rgba(147,51,234,0.8)]">
+                Qidirish
             </button>
         </div>
 
         <div id="loading" class="hidden flex-col items-center justify-center py-10">
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-16 w-16 mb-4"></div>
-            <p class="text-lg text-blue-400 font-semibold animate-pulse">Ma'lumotlar yuklanmoqda...</p>
+            <p class="text-lg text-purple-400 font-semibold animate-pulse">Ma'lumotlar tahlil qilinmoqda...</p>
         </div>
 
-        <div id="errorMsg" class="hidden glass border-red-500 text-red-400 px-6 py-4 rounded-xl mb-8 w-full max-w-4xl text-center"></div>
+        <div id="errorMsg" class="hidden glass border border-red-500 text-red-400 px-6 py-4 rounded-xl mb-8 w-full max-w-4xl text-center font-medium"></div>
 
-        <div id="resultsGrid" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-10">
-            </div>
-
+        <div id="resultsGrid" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-10"></div>
     </div>
 
     <script>
-        // --- 1. THREE.JS BACKGROUND ANIMATION ---
+        // --- AUDIO VISUALIZER VA 3D MUHIT ---
+        let audioContext, analyser, dataArray;
+        let isAudioInitialized = false;
+        let particlesMesh, particlesGeometry;
+
         const initThreeJS = () => {
             const canvas = document.getElementById('bg-canvas');
             const scene = new THREE.Scene();
+            // Chuqurroq vizual uchun tuman qo'shamiz
+            scene.fog = new THREE.FogExp2(0x0f2027, 0.05);
+
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
 
-            // Create particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 1500;
+            particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 3000;
             const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
 
-            for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 10;
+            for(let i = 0; i < particlesCount * 3; i+=3) {
+                posArray[i] = (Math.random() - 0.5) * 20; // x
+                posArray[i+1] = (Math.random() - 0.5) * 20; // y
+                posArray[i+2] = (Math.random() - 0.5) * 20; // z
+
+                // Ranglarni generatsiya qilish (Binafsharang va Ko'k)
+                colorArray[i] = 0.5 + Math.random() * 0.5;   // r
+                colorArray[i+1] = 0.2 + Math.random() * 0.3; // g
+                colorArray[i+2] = 0.8 + Math.random() * 0.2; // b
             }
 
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+
             const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.005,
-                color: 0x4dabf7,
+                size: 0.08,
+                vertexColors: true,
                 transparent: true,
                 opacity: 0.8,
                 blending: THREE.AdditiveBlending
             });
 
-            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particlesMesh);
-            camera.position.z = 3;
-
-            // Animation Loop
-            let mouseX = 0;
-            let mouseY = 0;
-
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX / window.innerWidth) - 0.5;
-                mouseY = (event.clientY / window.innerHeight) - 0.5;
-            });
+            camera.position.z = 5;
 
             const animate = () => {
                 requestAnimationFrame(animate);
-                particlesMesh.rotation.y += 0.001;
-                particlesMesh.rotation.x += 0.0005;
                 
-                // Subtle interactive movement
-                particlesMesh.rotation.y += mouseX * 0.01;
-                particlesMesh.rotation.x += mouseY * 0.01;
+                // Standart aylanish
+                particlesMesh.rotation.y += 0.001;
+                
+                // Agar musiqa o'ynayotgan bo'lsa, zarrachalarni harakatlantirish
+                if (isAudioInitialized && analyser) {
+                    analyser.getByteFrequencyData(dataArray);
+                    let averageFrequency = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                    
+                    // Bassga qarab zarrachalar hajmini kattalashtirish
+                    let scale = 1 + (averageFrequency / 256) * 1.5;
+                    particlesMesh.scale.set(scale, scale, scale);
+                    particlesMesh.rotation.x += (averageFrequency / 10000);
+                } else {
+                    // Musiqa yo'q paytda sekin asli holiga qaytish
+                    particlesMesh.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
+                }
 
                 renderer.render(scene, camera);
             };
-
             animate();
 
-            // Handle Resize
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
@@ -167,136 +156,115 @@
             });
         };
 
-        // Initialize 3D Background
-        initThreeJS();
-
-
-        // --- 2. ITUNES API & APP LOGIC ---
-        const searchInput = document.getElementById('searchInput');
-        const mediaType = document.getElementById('mediaType');
-        const searchBtn = document.getElementById('searchBtn');
-        const resultsGrid = document.getElementById('resultsGrid');
-        const loading = document.getElementById('loading');
-        const errorMsg = document.getElementById('errorMsg');
-
-        // Helper: Convert low-res image URL to high-res
-        const getHighResImage = (url) => {
-            if (!url) return 'https://via.placeholder.com/400x400?text=No+Image';
-            return url.replace('100x100bb', '600x600bb');
-        };
-
-        // Helper: Format Date
-        const formatDate = (dateString) => {
-            if(!dateString) return 'Sana noma\'lum';
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('uz-UZ', options);
-        };
-
-        // Fetch Data from iTunes API
-        const fetchItunesData = async () => {
-            const query = searchInput.value.trim();
-            if (!query) {
-                showError("Iltimos, qidirish uchun matn kiriting!");
-                return;
+        // --- AUDIO HOOK VA CORS MUAMMOSI YECHIMI ---
+        const setupAudio = (audioElement) => {
+            if (!isAudioInitialized) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 128; // Tezlik uchun kichikroq o'lcham
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                isAudioInitialized = true;
             }
 
-            const media = mediaType.value;
-            // API URL endpoint
-            const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=${media}&limit=20`;
+            // Avvalgi ulanishlarni oldini olish
+            if (audioElement._isConnected) return;
 
-            // UI State updates
-            errorMsg.classList.add('hidden');
+            const source = audioContext.createMediaElementSource(audioElement);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            audioElement._isConnected = true;
+        };
+
+        const fetchItunesData = async () => {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return showError("Iltimos, matn kiriting!");
+
+            const media = document.getElementById('mediaType').value;
+            // CORS muammosini aylanib o'tish uchun allorigins proxy xizmatidan foydalanamiz
+            const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=${media}&limit=20`;
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+
+            document.getElementById('errorMsg').classList.add('hidden');
+            const resultsGrid = document.getElementById('resultsGrid');
             resultsGrid.innerHTML = '';
-            loading.classList.remove('hidden');
-            loading.classList.add('flex');
+            document.getElementById('loading').classList.replace('hidden', 'flex');
 
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Tarmoq xatoligi yuz berdi. Iltimos qayta urinib ko'ring.");
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Tarmoq xatoligi");
                 
-                const data = await response.json();
+                const proxyData = await response.json();
+                const data = JSON.parse(proxyData.contents); // Proxy matn ko'rinishida qaytaradi
                 
-                if (data.results.length === 0) {
-                    showError("Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring.");
-                } else {
-                    renderResults(data.results);
-                }
+                if (data.results.length === 0) showError("Hech narsa topilmadi.");
+                else renderResults(data.results);
             } catch (error) {
-                showError(error.message);
+                showError("Xatolik: Tarmoq bloklandi yoki ulanish yo'q. Qayta urinib ko'ring.");
             } finally {
-                loading.classList.remove('flex');
-                loading.classList.add('hidden');
+                document.getElementById('loading').classList.replace('flex', 'hidden');
             }
         };
 
-        // Display Errors
-        const showError = (message) => {
-            errorMsg.textContent = message;
-            errorMsg.classList.remove('hidden');
+        const showError = (msg) => {
+            const err = document.getElementById('errorMsg');
+            err.textContent = msg;
+            err.classList.remove('hidden');
         };
 
-        // Render Data to DOM
         const renderResults = (results) => {
-            resultsGrid.innerHTML = '';
+            const grid = document.getElementById('resultsGrid');
             
             results.forEach(item => {
-                // Determine names based on media type returned
-                const title = item.trackName || item.collectionName || 'Nomsiz asar';
-                const artist = item.artistName || 'Noma\'lum ijodkor';
-                const imgUrl = getHighResImage(item.artworkUrl100);
-                const genre = item.primaryGenreName || 'Boshqa';
-                const price = item.trackPrice ? `$${item.trackPrice}` : (item.collectionPrice ? `$${item.collectionPrice}` : 'Bepul');
-                const link = item.trackViewUrl || item.collectionViewUrl || '#';
-                const preview = item.previewUrl;
-
-                // Create Card Element
+                const imgUrl = item.artworkUrl100 ? item.artworkUrl100.replace('100x100bb', '600x600bb') : '';
+                const title = item.trackName || item.collectionName || 'Nomsiz';
                 const card = document.createElement('div');
-                card.className = 'glass rounded-2xl overflow-hidden card-hover flex flex-col relative group';
+                card.className = 'glass rounded-3xl overflow-hidden card-hover flex flex-col group';
                 
-                // Construct Inner HTML
                 let cardHTML = `
                     <div class="relative w-full pt-[100%] overflow-hidden">
-                        <img src="${imgUrl}" alt="${title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
-                        <div class="absolute top-2 right-2 bg-black bg-opacity-70 backdrop-blur-sm text-xs px-2 py-1 rounded-md text-gray-200">
-                            ${genre}
-                        </div>
+                        <img src="${imgUrl}" alt="${title}" class="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-125 group-hover:rotate-3">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent opacity-80"></div>
                     </div>
-                    <div class="p-5 flex flex-col flex-grow">
-                        <h3 class="font-bold text-lg mb-1 truncate text-white" title="${title}">${title}</h3>
-                        <p class="text-sm text-gray-400 mb-3 truncate" title="${artist}">${artist}</p>
-                        
-                        <div class="mt-auto flex items-center justify-between">
-                            <span class="font-semibold text-blue-400">${price}</span>
-                            <a href="${link}" target="_blank" class="bg-gray-800 hover:bg-blue-600 text-white p-2 rounded-full transition-colors">
-                                <i class="fas fa-external-link-alt text-sm"></i>
-                            </a>
-                        </div>
-                    </div>
+                    <div class="p-6 flex flex-col flex-grow relative -mt-16 z-10">
+                        <h3 class="font-bold text-xl mb-1 text-white drop-shadow-lg truncate">${title}</h3>
+                        <p class="text-sm text-purple-300 mb-4 truncate">${item.artistName || 'Noma\'lum'}</p>
                 `;
 
-                // Add Audio Preview if available (mostly for music/podcasts)
-                if(preview && (item.kind === 'song' || item.kind === 'podcast' || item.wrapperType === 'track')) {
+                if(item.previewUrl && (item.kind === 'song' || item.wrapperType === 'track')) {
+                    // crossOrigin="anonymous" aynan audio vizualizatsiya uchun zarur
                     cardHTML += `
-                        <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
-                            <audio controls class="w-11/12 h-10 shadow-lg" preload="none">
-                                <source src="${preview}" type="audio/mpeg">
-                                Brauzeringiz audio formatini qo'llab-quvvatlamaydi.
+                        <div class="mt-auto">
+                            <audio controls class="w-full h-12 rounded-xl custom-audio" preload="none" crossorigin="anonymous">
+                                <source src="${item.previewUrl}" type="audio/mpeg">
                             </audio>
                         </div>
                     `;
                 }
 
+                cardHTML += `</div>`;
                 card.innerHTML = cardHTML;
-                resultsGrid.appendChild(card);
+                grid.appendChild(card);
+            });
+
+            // Barcha audiolarga event listener qo'shish
+            document.querySelectorAll('audio').forEach(audio => {
+                audio.addEventListener('play', function() {
+                    // Boshqa audiolarni to'xtatish
+                    document.querySelectorAll('audio').forEach(a => { if(a !== this) a.pause(); });
+                    
+                    // AudioContext siyosati sababli, foydalanuvchi birinchi marta bosganida Context ni uyg'otamiz
+                    if (audioContext && audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    setupAudio(this);
+                });
             });
         };
 
-        // Event Listeners
-        searchBtn.addEventListener('click', fetchItunesData);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') fetchItunesData();
-        });
-
+        initThreeJS();
+        document.getElementById('searchBtn').addEventListener('click', fetchItunesData);
+        document.getElementById('searchInput').addEventListener('keypress', (e) => e.key === 'Enter' && fetchItunesData());
     </script>
 </body>
 </html>
