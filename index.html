@@ -1,376 +1,156 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTunes Pro Search | Ultimate Edition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
-        
-        body { margin: 0; overflow-x: hidden; font-family: 'Inter', system-ui, sans-serif; background-color: #020617; }
-        
-        #bg-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KRADUS Music Search</title>
 
-        .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .card-hover:hover {
-            transform: translateY(-8px) scale(1.03);
-            border-color: rgba(59, 130, 246, 0.4);
-            box-shadow: 0 20px 40px -5px rgba(59, 130, 246, 0.2);
-        }
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-        /* Skeleton Animation */
-        .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-            animation: skeletonLoading 1.5s infinite;
-        }
-        @keyframes skeletonLoading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Play Button Pulse */
-        .play-btn { transition: transform 0.2s; }
-        .play-btn:active { transform: scale(0.9); }
-    </style>
+<style>
+body {
+    background: linear-gradient(135deg,#0f172a,#020617);
+    min-height:100vh;
+    color:white;
+}
+.glass {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.song-card {
+    transition: all .3s ease;
+}
+.song-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+.loader {
+    border:4px solid rgba(255,255,255,.1);
+    border-top:4px solid #3b82f6;
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+</style>
 </head>
-<body class="text-white min-h-screen flex flex-col relative">
 
-    <canvas id="bg-canvas"></canvas>
+<body class="flex flex-col items-center p-6">
 
-    <div class="z-10 container mx-auto px-4 py-12 flex-grow flex flex-col items-center">
-        
-        <div class="w-full max-w-4xl text-center mb-12 transform transition-all duration-700 hover:scale-105">
-            <h1 class="text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 tracking-tighter">
-                <i class="fab fa-apple mr-2 text-white drop-shadow-lg"></i>iTunes Pro
-            </h1>
-            <p class="text-slate-400 text-xl font-light">Koinotdagi eng tezkor media qidiruv tizimi</p>
-        </div>
+<div class="w-full max-w-4xl glass p-6 rounded-4xl shadow-2xl">
 
-        <div class="glass w-full max-w-4xl p-4 rounded-3xl flex flex-col md:flex-row gap-4 mb-10 relative z-20">
-            <div class="relative flex-grow">
-                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-blue-400 text-xl"></i>
-                </div>
-                <input type="text" id="searchInput" placeholder="Musiqa, kino yoki ijodkor nomini yozing..." 
-                    class="w-full pl-14 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg shadow-inner">
-            </div>
-            
-            <div class="relative min-w-[180px]">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i class="fas fa-filter text-purple-400"></i>
-                </div>
-                <select id="mediaType" class="w-full pl-10 pr-6 py-4 bg-slate-900/50 border border-slate-700 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg appearance-none cursor-pointer">
-                    <option value="all">Barchasi</option>
-                    <option value="musicTrack">Musiqa</option>
-                    <option value="movie">Kino</option>
-                    <option value="podcast">Podkast</option>
-                    <option value="software">Ilova</option>
-                </select>
-            </div>
-        </div>
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-400">
+        🎵 KRADUS Premium Music Search
+    </h1>
 
-        <div id="statusArea" class="w-full max-w-4xl text-center mb-8 h-8">
-            <p id="errorMsg" class="hidden text-red-400 bg-red-900/30 border border-red-500/50 px-6 py-2 rounded-xl inline-block"></p>
-            <p id="resultCount" class="hidden text-slate-300 font-medium"></p>
-        </div>
-
-        <div id="resultsGrid" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-12">
-            </div>
-
+    <div class="input-group mb-4">
+        <input type="text" id="searchInput" 
+               class="form-control rounded-start-pill p-3" 
+               placeholder="Musiqa nomini kiriting...">
+        <button class="btn btn-primary rounded-end-pill px-4" onclick="searchMusic()">
+            Qidirish
+        </button>
     </div>
 
-    <audio id="globalAudioPlayer" class="hidden"></audio>
+    <div id="loader" class="hidden flex justify-center my-6">
+        <div class="loader"></div>
+    </div>
 
-    <script>
-        // --- 1. OPTIMIZED 3D BACKGROUND ---
-        const initThreeJS = () => {
-            const canvas = document.getElementById('bg-canvas');
-            const scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x020617, 0.001);
-            
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false }); // Antialias false for performance
-            
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
+    <div id="results" class="grid md:grid-cols-2 gap-4"></div>
 
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 2000;
-            const posArray = new Float32Array(particlesCount * 3);
-            const colorArray = new Float32Array(particlesCount * 3);
+    <div class="flex justify-center mt-6 gap-3">
+        <button id="prevBtn" class="btn btn-outline-light hidden">Oldingi</button>
+        <button id="nextBtn" class="btn btn-outline-light hidden">Keyingi</button>
+    </div>
 
-            for(let i = 0; i < particlesCount * 3; i+=3) {
-                posArray[i] = (Math.random() - 0.5) * 15;
-                posArray[i+1] = (Math.random() - 0.5) * 15;
-                posArray[i+2] = (Math.random() - 0.5) * 15;
-                
-                // Mix of blue and purple stars
-                const isBlue = Math.random() > 0.5;
-                colorArray[i] = isBlue ? 0.2 : 0.6;     // R
-                colorArray[i+1] = isBlue ? 0.5 : 0.2;   // G
-                colorArray[i+2] = 0.9;                  // B
-            }
+</div>
 
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
-            
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.02,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.6,
-                blending: THREE.AdditiveBlending
-            });
+<script>
+let offset = 0;
+let limit = 10;
+let currentQuery = "";
+let totalResults = 0;
 
-            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particlesMesh);
-            camera.position.z = 4;
+async function searchMusic(reset=true) {
+    if(reset){
+        offset = 0;
+    }
 
-            let mouseX = 0, mouseY = 0;
-            let targetX = 0, targetY = 0;
-            const windowHalfX = window.innerWidth / 2;
-            const windowHalfY = window.innerHeight / 2;
+    const query = document.getElementById("searchInput").value.trim();
+    if(!query){
+        alert("Qidiruv so‘zi kiriting!");
+        return;
+    }
 
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX - windowHalfX);
-                mouseY = (event.clientY - windowHalfY);
-            });
+    currentQuery = query;
 
-            const clock = new THREE.Clock();
+    document.getElementById("loader").classList.remove("hidden");
+    document.getElementById("results").innerHTML = "";
 
-            const animate = () => {
-                requestAnimationFrame(animate);
-                const elapsedTime = clock.getElapsedTime();
+    try {
+        const response = await fetch(`api.php?text=${encodeURIComponent(query)}&offset=${offset}&limit=${limit}`);
+        const data = await response.json();
 
-                targetX = mouseX * 0.001;
-                targetY = mouseY * 0.001;
+        document.getElementById("loader").classList.add("hidden");
 
-                particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
-                particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
-                particlesMesh.position.y = Math.sin(elapsedTime * 0.2) * 0.1;
-
-                renderer.render(scene, camera);
-            };
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        };
-        initThreeJS();
-
-
-        // --- 2. ADVANCED API & APP LOGIC ---
-        const DOM = {
-            search: document.getElementById('searchInput'),
-            type: document.getElementById('mediaType'),
-            grid: document.getElementById('resultsGrid'),
-            error: document.getElementById('errorMsg'),
-            count: document.getElementById('resultCount'),
-            audio: document.getElementById('globalAudioPlayer')
-        };
-
-        let currentPlayingBtn = null;
-        const cache = new Map(); // Simple memory cache to prevent redundant API calls
-
-        // Image Enhancer
-        const optimizeImage = (url) => url ? url.replace('100x100bb', '600x600bb') : 'https://placehold.co/600x600/1e293b/ffffff?text=No+Cover';
-
-        // Skeleton UI Generator
-        const showSkeletons = () => {
-            DOM.grid.innerHTML = Array(8).fill(0).map(() => `
-                <div class="glass rounded-3xl overflow-hidden flex flex-col p-4 gap-4">
-                    <div class="w-full aspect-square rounded-2xl skeleton"></div>
-                    <div class="h-6 w-3/4 rounded skeleton"></div>
-                    <div class="h-4 w-1/2 rounded skeleton"></div>
-                    <div class="mt-auto h-10 w-full rounded-xl skeleton"></div>
-                </div>
-            `).join('');
-            DOM.count.classList.add('hidden');
-            DOM.error.classList.add('hidden');
-        };
-
-        // Bulletproof Fetch with Proxy Fallback
-        const fetchSecurely = async (url) => {
-            try {
-                // 1-urinish: To'g'ridan-to'g'ri (eng tez)
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                return await res.json();
-            } catch (err) {
-                console.warn("Direct fetch failed, using proxy fallback...", err);
-                // 2-urinish: CORS bloklansa Proksi orqali yuborish
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-                const proxyRes = await fetch(proxyUrl);
-                if (!proxyRes.ok) throw new Error("Tarmoq xatosi yoki API cheklovi.");
-                const data = await proxyRes.json();
-                return JSON.parse(data.contents);
-            }
-        };
-
-        // Main Search Engine
-        const executeSearch = async () => {
-            const query = DOM.search.value.trim();
-            if (!query) {
-                DOM.grid.innerHTML = '';
-                DOM.count.classList.add('hidden');
-                return;
-            }
-
-            const media = DOM.type.value;
-            const cacheKey = `${query}_${media}`;
-
-            // Check Cache
-            if (cache.has(cacheKey)) {
-                renderResults(cache.get(cacheKey));
-                return;
-            }
-
-            showSkeletons();
-
-            const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=${media}&limit=24`;
-
-            try {
-                const data = await fetchSecurely(url);
-                
-                if (data.results.length === 0) {
-                    DOM.grid.innerHTML = '';
-                    showError(`"${query}" bo'yicha hech narsa topilmadi.`);
-                } else {
-                    cache.set(cacheKey, data.results); // Save to cache
-                    renderResults(data.results);
-                }
-            } catch (error) {
-                DOM.grid.innerHTML = '';
-                showError("Ulanishda muammo. Iltimos, internetingizni tekshiring yoki biroz kuting.");
-            }
-        };
-
-        // Error Display
-        const showError = (msg) => {
-            DOM.error.textContent = msg;
-            DOM.error.classList.remove('hidden');
-            DOM.count.classList.add('hidden');
-        };
-
-        // Render Data
-        const renderResults = (results) => {
-            DOM.grid.innerHTML = '';
-            DOM.error.classList.add('hidden');
-            
-            DOM.count.textContent = `Topildi: ${results.length} ta natija`;
-            DOM.count.classList.remove('hidden');
-
-            results.forEach((item, index) => {
-                const title = item.trackName || item.collectionName || 'Nomsiz';
-                const artist = item.artistName || 'Noma\'lum';
-                const img = optimizeImage(item.artworkUrl100);
-                const price = item.trackPrice > 0 ? `$${item.trackPrice}` : 'Bepul';
-                const isPlayable = item.previewUrl && (item.kind === 'song' || item.wrapperType === 'track');
-
-                const card = document.createElement('div');
-                card.className = 'glass p-4 rounded-3xl card-hover flex flex-col group relative';
-                card.style.animation = `fadeIn 0.5s ease forwards ${index * 0.05}s`;
-                card.style.opacity = '0';
-
-                let mediaBtn = '';
-                if (isPlayable) {
-                    mediaBtn = `
-                        <button onclick="toggleAudio(this, '${item.previewUrl}')" class="play-btn absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-400 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                            <i class="fas fa-play ml-1"></i>
-                        </button>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 shadow-md">
-                        <img src="${img}" alt="Cover" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
-                        ${mediaBtn}
-                    </div>
-                    <div class="flex flex-col flex-grow">
-                        <h3 class="font-bold text-lg leading-tight text-white mb-1 truncate" title="${title}">${title}</h3>
-                        <p class="text-sm text-slate-400 mb-4 truncate" title="${artist}">${artist}</p>
-                        
-                        <div class="mt-auto flex items-center justify-between border-t border-slate-700/50 pt-3">
-                            <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">${price}</span>
-                            <a href="${item.trackViewUrl || item.collectionViewUrl || '#'}" target="_blank" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2">
-                                Ko'rish <i class="fas fa-external-link-alt text-xs"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-                DOM.grid.appendChild(card);
-            });
-        };
-
-        // Custom Audio Logic
-        window.toggleAudio = (btnElement, url) => {
-            const icon = btnElement.querySelector('i');
-            
-            // Pleyerda ayni shu musiqa qo'yilyaptimi?
-            if (DOM.audio.src === url && !DOM.audio.paused) {
-                DOM.audio.pause();
-                icon.className = 'fas fa-play ml-1';
-                btnElement.classList.replace('bg-purple-500', 'bg-blue-500');
-                return;
-            }
-
-            // Boshqa musiqani to'xtatish va yangisini qo'yish
-            if (currentPlayingBtn && currentPlayingBtn !== btnElement) {
-                currentPlayingBtn.querySelector('i').className = 'fas fa-play ml-1';
-                currentPlayingBtn.classList.replace('bg-purple-500', 'bg-blue-500');
-            }
-
-            DOM.audio.src = url;
-            DOM.audio.play();
-            icon.className = 'fas fa-pause';
-            btnElement.classList.replace('bg-blue-500', 'bg-purple-500');
-            currentPlayingBtn = btnElement;
-
-            // Musiqa tugasa, ikonkani asliga qaytarish
-            DOM.audio.onended = () => {
-                icon.className = 'fas fa-play ml-1';
-                btnElement.classList.replace('bg-purple-500', 'bg-blue-500');
-            };
-        };
-
-        // Debounce Logic (Avtomatik qidiruv)
-        let timeout = null;
-        DOM.search.addEventListener('input', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(executeSearch, 600); // 600ms kutadi
-        });
-
-        DOM.type.addEventListener('change', executeSearch);
-
-    </script>
-    <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        if(data.success){
+            totalResults = data.total;
+            renderResults(data.results);
+            updatePagination();
+        } else {
+            document.getElementById("results").innerHTML = 
+                `<p class="text-red-400 text-center">${data.message}</p>`;
         }
-    </style>
+    } catch(error){
+        document.getElementById("loader").classList.add("hidden");
+        document.getElementById("results").innerHTML = 
+            `<p class="text-red-500 text-center">Server xatosi!</p>`;
+    }
+}
+
+function renderResults(results){
+    const container = document.getElementById("results");
+
+    results.forEach(song => {
+        container.innerHTML += `
+        <div class="song-card glass p-4 rounded-3xl">
+            <h5 class="text-lg font-semibold text-blue-300">${song.name}</h5>
+            <p class="text-sm text-gray-300">${song.artist}</p>
+            <p class="text-xs text-gray-400 mb-3">⏱ ${song.duration}</p>
+            <audio controls class="w-full">
+                <source src="${song.url}" type="audio/mpeg">
+            </audio>
+        </div>
+        `;
+    });
+}
+
+function updatePagination(){
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    prevBtn.classList.toggle("hidden", offset === 0);
+    nextBtn.classList.toggle("hidden", offset + limit >= totalResults);
+
+    prevBtn.onclick = () => {
+        offset -= limit;
+        searchMusic(false);
+    };
+
+    nextBtn.onclick = () => {
+        offset += limit;
+        searchMusic(false);
+    };
+}
+</script>
+
 </body>
 </html>
