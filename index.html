@@ -1,87 +1,175 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!doctype html>
+
+<!--
+  win12-mock-optimized.html
+  Optimized and improved single-file Windows-12-style interactive mockup.
+  How to use: save as `win12-mock-optimized.html` and open in a modern browser.
+  Optional: place your wallpaper image next to this file and set its name in the data-wallpaper attribute below (e.g. wallpaper.webp).
+--><html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Windows XP Web</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Windows 12 — Mock (Optimized)</title>
+  <meta name="description" content="Soddalashtirilgan, optimallashtirilgan Windows‑12 mockup: tez, responsiv va kirish/foydalanish uchun mos." />  <style>
+    /* ===== Lightweight reset & system font (fast, no external load) ===== */
+    :root{
+      --bg-1:#031025; --bg-2:#07172a; --accent:#3aa0ff; --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08); --radius:14px; --taskbar-h:64px; --maxw:1200px;
+      color-scheme: dark;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;line-height:1.2;color:#e8f2ff}
+    img{max-width:100%;display:block}
+
+    /* ===== Wallpaper (deferred) ===== */
+    .wallpaper{position:fixed;inset:0;z-index:0;background-color:var(--bg-2);background-position:center;background-size:cover;filter:contrast(1.03) saturate(1.06) brightness(0.92);will-change:transform;contain:paint;}
+    .wallpaper.loading{opacity:0.01;transition:opacity .45s ease}
+    .wallpaper.ready{opacity:1}
+
+    /* ===== Subtle noise/overlay (cheap) ===== */
+    .overlay{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(120deg,rgba(58,160,255,0.03),transparent 30%), radial-gradient(800px 300px at 85% 15%, rgba(123,97,255,0.04), transparent 10%);mix-blend-mode:screen}
+
+    /* ===== Center header/logo ===== */
+    .hero{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding-top:36px;padding-bottom:36px}
+    .logo{display:flex;align-items:center;gap:14px;padding:10px 18px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(1,6,20,0.6)}
+    .logo svg{width:52px;height:52px;flex:0 0 52px}
+    .logo h1{margin:0;font-weight:600;font-size:28px}
+    .logo .ver{color:var(--accent);font-weight:800;font-size:36px;margin-left:6px}
+
+    /* ===== Start menu (glass) ===== */
+    .start{position:fixed;left:50%;top:50%;transform:translate(-50%,36%);z-index:3;width:720px;max-width:92vw;border-radius:var(--radius);padding:14px;display:flex;gap:16px;align-items:flex-start;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid var(--glass-border);box-shadow:0 18px 50px rgba(1,6,18,0.65);backdrop-filter:blur(10px);transition:opacity .18s ease,transform .2s cubic-bezier(.2,.9,.3,1);}
+    .start.hidden{opacity:0;transform:translate(-50%,56%);pointer-events:none}
+    .col-left{width:430px;display:flex;flex-direction:column;gap:10px}
+    .search{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .search input{flex:1;border:0;background:transparent;color:inherit;font-size:15px;outline:0}
+    .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+    .app{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px;border-radius:10px;font-size:12px;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)}
+
+    /* ===== Right column ===== */
+    .col-right{flex:1;display:flex;flex-direction:column;gap:10px}
+    .recommended{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;min-height:120px}
+
+    /* ===== Taskbar & tray ===== */
+    .taskbar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:4;height:var(--taskbar-h);width:78%;max-width:var(--maxw);display:flex;align-items:center;justify-content:center;gap:18px;padding:10px 18px;border-radius:40px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(1,6,20,0.6)}
+    .task-icon{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+    .task-icon.active{background:linear-gradient(180deg, rgba(58,160,255,0.12), rgba(58,160,255,0.06));box-shadow:0 6px 18px rgba(58,160,255,0.06)}
+
+    /* ===== Tiny responsive + reduced-motion ===== */
+    @media (max-width:720px){.grid{grid-template-columns:repeat(4,1fr)}.start{width:92vw;left:50%;top:auto;bottom:120px;transform:translateX(-50%)}}
+    @media (prefers-reduced-motion:reduce){.start{transition:none}.wallpaper{transition:none}}
+
+    /* ===== Accessibility helpers ===== */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style></head>
 <body>
-  <main id="desktop" class="desktop" aria-label="Рабочий стол">
-    <section id="desktop-area" class="desktop-area">
-      <div id="desktop-icons" class="desktop-icons" aria-label="Значки рабочего стола"></div>
-      <div id="selection-box" class="selection-box hidden"></div>
-      <div id="windows-layer" class="windows-layer" aria-live="polite"></div>
-    </section>
-
-    <div id="desktop-menu" class="context-menu hidden" role="menu" aria-label="Меню рабочего стола">
-      <button class="context-item" data-action="open" type="button">Открыть</button>
-      <button class="context-item" data-action="rename" type="button">Переименовать</button>
-      <button class="context-item" data-action="delete" type="button">Удалить</button>
-      <div class="context-separator"></div>
-      <button class="context-item" data-action="new-folder" type="button">Создать папку</button>
-      <button class="context-item" data-action="new-file" type="button">Создать текстовый файл</button>
-    </div>
-
-    <div id="start-menu" class="start-menu hidden" role="menu" aria-label="Меню Пуск">
-      <div class="start-head">
-        <div class="start-avatar">👤</div>
-        <div class="start-user">Пользователь</div>
+  <!-- data-wallpaper: change to your file name (webp preferred) OR leave empty to keep gradient bg -->
+  <div id="wall" class="wallpaper loading" role="img" aria-label="fon" data-wallpaper="wallpaper.webp"></div>
+  <div class="overlay" aria-hidden="true"></div>  <main class="hero" id="main">
+    <header class="logo" aria-hidden="false">
+      <!-- inline SVG logo for reuse (small & cached in-memory) -->
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <rect x="2" y="8" width="28" height="24" rx="2" fill="#3AA0FF"/>
+        <rect x="34" y="8" width="28" height="24" rx="2" fill="#66D2FF"/>
+        <rect x="2" y="32" width="28" height="24" rx="2" fill="#5FB6FF"/>
+        <rect x="34" y="32" width="28" height="24" rx="2" fill="#7BB7FF"/>
+      </svg>
+      <div>
+        <h1>Windows <span class="ver">12</span></h1>
       </div>
-      <div class="start-grid">
-        <div class="start-col left">
-          <button class="start-item" data-open="notepad" type="button">Блокнот</button>
-          <button class="start-item" data-open="calculator" type="button">Калькулятор</button>
-          <button class="start-item" data-open="paint" type="button">Paint</button>
-          <button class="start-item" data-open="internet-explorer" type="button">Internet Explorer</button>
-        </div>
-        <div class="start-col right">
-          <button class="start-item" data-open="my-computer" type="button">Мой компьютер</button>
-          <button class="start-item" data-open="my-documents" type="button">Мои документы</button>
-          <button class="start-item" data-open="control-panel" type="button">Панель управления</button>
-          <button class="start-item" data-system="shutdown" type="button">Выключение</button>
-        </div>
-      </div>
-      <div class="start-foot">
-        <button id="start-shutdown" class="power-btn" type="button">Выключение</button>
-      </div>
-    </div>
+    </header>
+  </main>  <section id="start" class="start" role="dialog" aria-label="Start menyu" aria-modal="false">
+    <div class="col-left">
+      <div class="search" role="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21l-4.3-4.3" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="search" placeholder="Qidirish..." aria-label="Qidirish" />
+      </div><div id="grid" class="grid" aria-live="polite" aria-atomic="true">
+    <!-- Apps (small set, reused icons) -->
+    <div class="app" tabindex="0" data-name="Explorer"><svg width="36" height="36" viewBox="0 0 24 24" aria-hidden><path d="M3 7h18" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Explorer</span></div>
+    <div class="app" tabindex="0" data-name="Mail"><svg width="36" height="36" viewBox="0 0 24 24" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Mail</span></div>
+    <div class="app" tabindex="0" data-name="Photos"><svg width="36" height="36" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="7" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Photos</span></div>
+    <div class="app" tabindex="0" data-name="Store"><svg width="36" height="36" viewBox="0 0 24 24" aria-hidden><path d="M4 7h16v10H4z" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Store</span></div>
+    <div class="app" tabindex="0" data-name="Music"><svg width="36" height="36" viewBox="0 0 24 24" aria-hidden><path d="M9 18V6l10-2v12" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Music</span></div>
+    <div class="app" tabindex="0" data-name="Settings"><svg width="36" height="36" viewBox="0 0 24 24" aria-hidden><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Settings</span></div>
+  </div>
+</div>
 
-    <div id="shutdown-modal" class="shutdown-modal hidden" role="dialog" aria-modal="true" aria-label="Завершение работы Windows">
-      <div class="shutdown-window">
-        <div class="shutdown-title">Завершение работы Windows</div>
-        <div class="shutdown-grid">
-          <button class="shutdown-btn" data-shutdown="standby" type="button">Ждущий режим</button>
-          <button class="shutdown-btn danger" data-shutdown="poweroff" type="button">Выключение</button>
-          <button class="shutdown-btn" data-shutdown="restart" type="button">Перезагрузка</button>
-          <button class="shutdown-btn" data-shutdown="cancel" type="button">Отмена</button>
-        </div>
-      </div>
-    </div>
+<aside class="col-right" aria-label="Tavsiya etilgan">
+  <div style="font-weight:700;font-size:14px;opacity:0.95">Tavsiya etilgan</div>
+  <div class="recommended" id="recommended">
+    <div style="display:flex;gap:10px;align-items:center"><div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#7b61ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:white">A</div><div><div style="font-size:13px">Avtomatik zaxira</div><div style="font-size:12px;opacity:0.8">Hujjatlar — 2 daqiqa oldin</div></div></div>
+  </div>
+  <div style="opacity:0.85;font-size:13px">Eng ko'p ishlatiladigan ilovalar</div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <div class="app" style="flex:1"><svg width="32" height="32" viewBox="0 0 24 24" aria-hidden><path d="M3 7h18" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Explorer</span></div>
+    <div class="app" style="flex:1"><svg width="32" height="32" viewBox="0 0 24 24" aria-hidden><path d="M9 18V6l10-2v12" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Music</span></div>
+    <div class="app" style="flex:1"><svg width="32" height="32" viewBox="0 0 24 24" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg><span>Mail</span></div>
+  </div>
+</aside>
 
-    <div id="reboot-screen" class="reboot-screen hidden" aria-hidden="true">
-      <div class="reboot-brand">Windows XP</div>
-      <div class="reboot-text">Выполняется перезагрузка...</div>
-      <div class="reboot-track"><div class="reboot-runner"></div></div>
-    </div>
+  </section>  <nav class="taskbar" role="navigation" aria-label="Taskbar">
+    <button id="toggleStart" class="task-icon" aria-pressed="true" title="Start (Bosing)">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" aria-hidden><path d="M3 3h9v9H3zM12 3h9v9h-9zM3 12h9v9H3zM12 12h9v9h-9z" fill="white" fill-opacity="0.95"/></svg>
+    </button><div class="task-icon active" title="Explorer" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden><path d="M3 7h18" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg></div>
+<div class="task-icon" title="Edge" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden><path d="M6 18a9 9 0 1 0 0-12" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg></div>
+<div class="task-icon" title="Store" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden><path d="M4 7h16v10H4z" stroke="white" stroke-opacity="0.95" stroke-width="1.2"/></svg></div>
 
-    <div id="poweroff-screen" class="poweroff-screen hidden" aria-hidden="true">
-      <div class="poweroff-text">Теперь питание компьютера можно отключить</div>
-    </div>
+  </nav>  <div id="tray" style="position:fixed;right:48px;bottom:24px;z-index:5;color:rgba(255,255,255,0.9);font-size:13px">00:42 • March 15</div><button id="srToggle" class="sr-only">Start toggle</button>
 
-    <footer id="taskbar" class="taskbar">
-      <button id="start-btn" class="start-btn" type="button" aria-expanded="false">
-        <span>🪟</span>
-        <span>Пуск</span>
-      </button>
-      <div id="task-buttons" class="task-buttons" aria-label="Открытые окна"></div>
-      <div class="tray">
-        <span class="tray-sep" aria-hidden="true"></span>
-        <span id="clock" class="clock"></span>
-      </div>
-    </footer>
-  </main>
+  <script>
+    /* ===== Performance-minded wallpaper loader ===== */
+    (function(){
+      const wall = document.getElementById('wall');
+      const src = wall.dataset.wallpaper;
+      if(!src){ wall.classList.remove('loading'); wall.classList.add('ready'); return }
 
-  <script src="script.js"></script>
-</body>
+      // Use requestIdleCallback when available; fallback to DOMContentLoaded
+      const load = ()=>{
+        const img = new Image(); img.src = src;
+        img.onload = ()=>{ wall.style.backgroundImage = `url('${src}')`; wall.classList.remove('loading'); wall.classList.add('ready') }
+        img.onerror = ()=>{ wall.classList.remove('loading') }
+      };
+      if('requestIdleCallback' in window) requestIdleCallback(load,{timeout:1500}); else window.addEventListener('DOMContentLoaded',load,{once:true});
+    })();
+
+    /* ===== Start menu interaction: minimal, accessible ===== */
+    (function(){
+      const start = document.getElementById('start');
+      const btn = document.getElementById('toggleStart');
+      const search = document.getElementById('search');
+      const grid = document.getElementById('grid');
+
+      const toggle = (forced)=>{
+        const hidden = start.classList.contains('hidden');
+        const shouldHide = typeof forced === 'boolean' ? !forced : !hidden;
+        start.classList.toggle('hidden', shouldHide);
+        btn.setAttribute('aria-pressed', String(!shouldHide));
+        if(!shouldHide) search.focus();
+      };
+
+      btn.addEventListener('click', ()=> toggle(true));
+
+      document.addEventListener('keydown', (e)=>{
+        if(e.key==='Escape'){ start.classList.add('hidden'); btn.setAttribute('aria-pressed','false'); }
+        if((e.metaKey || e.key==='Meta') || (e.ctrlKey && e.key==='Escape')){ toggle(true) }
+      });
+
+      // Tiny search: filter by data-name
+      search.addEventListener('input', (ev)=>{
+        const q = ev.target.value.trim().toLowerCase();
+        const apps = grid.querySelectorAll('.app');
+        apps.forEach(a=> a.style.display = a.dataset.name.toLowerCase().includes(q) ? 'flex' : 'none');
+      });
+
+      // Keyboard: enter to "open" app (demo)
+      grid.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter'){ const app = e.target.closest('.app'); if(app) alert(app.dataset.name + ' ochildi (demo)') }
+      });
+
+      // small accessibility: trap focus when menu open on small screens
+      window.addEventListener('resize', ()=>{/* could implement focus trap if needed */});
+    })();
+
+    /* ===== Small runtime telemetry: avoid heavy work ===== */
+    // nothing heavy here — leave hooks for future lazy-loading of actual app data
+  </script></body>
 </html>
