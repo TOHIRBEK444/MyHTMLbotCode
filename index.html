@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows XP Web</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="desktop" class="desktop" aria-label="Рабочий стол">
+    <section id="desktop-area" class="desktop-area">
+      <div id="desktop-icons" class="desktop-icons" aria-label="Значки рабочего стола"></div>
+      <div id="selection-box" class="selection-box hidden"></div>
+      <div id="windows-layer" class="windows-layer" aria-live="polite"></div>
+    </section>
+
+    <div id="desktop-menu" class="context-menu hidden" role="menu" aria-label="Меню рабочего стола">
+      <button class="context-item" data-action="open" type="button">Открыть</button>
+      <button class="context-item" data-action="rename" type="button">Переименовать</button>
+      <button class="context-item" data-action="delete" type="button">Удалить</button>
+      <div class="context-separator"></div>
+      <button class="context-item" data-action="new-folder" type="button">Создать папку</button>
+      <button class="context-item" data-action="new-file" type="button">Создать текстовый файл</button>
+    </div>
+
+    <div id="start-menu" class="start-menu hidden" role="menu" aria-label="Меню Пуск">
+      <div class="start-head">
+        <div class="start-avatar">👤</div>
+        <div class="start-user">Пользователь</div>
+      </div>
+      <div class="start-grid">
+        <div class="start-col left">
+          <button class="start-item" data-open="notepad" type="button">Блокнот</button>
+          <button class="start-item" data-open="calculator" type="button">Калькулятор</button>
+          <button class="start-item" data-open="paint" type="button">Paint</button>
+          <button class="start-item" data-open="internet-explorer" type="button">Internet Explorer</button>
+        </div>
+        <div class="start-col right">
+          <button class="start-item" data-open="my-computer" type="button">Мой компьютер</button>
+          <button class="start-item" data-open="my-documents" type="button">Мои документы</button>
+          <button class="start-item" data-open="control-panel" type="button">Панель управления</button>
+          <button class="start-item" data-system="shutdown" type="button">Выключение</button>
+        </div>
+      </div>
+      <div class="start-foot">
+        <button id="start-shutdown" class="power-btn" type="button">Выключение</button>
+      </div>
+    </div>
+
+    <div id="shutdown-modal" class="shutdown-modal hidden" role="dialog" aria-modal="true" aria-label="Завершение работы Windows">
+      <div class="shutdown-window">
+        <div class="shutdown-title">Завершение работы Windows</div>
+        <div class="shutdown-grid">
+          <button class="shutdown-btn" data-shutdown="standby" type="button">Ждущий режим</button>
+          <button class="shutdown-btn danger" data-shutdown="poweroff" type="button">Выключение</button>
+          <button class="shutdown-btn" data-shutdown="restart" type="button">Перезагрузка</button>
+          <button class="shutdown-btn" data-shutdown="cancel" type="button">Отмена</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="reboot-screen" class="reboot-screen hidden" aria-hidden="true">
+      <div class="reboot-brand">Windows XP</div>
+      <div class="reboot-text">Выполняется перезагрузка...</div>
+      <div class="reboot-track"><div class="reboot-runner"></div></div>
+    </div>
+
+    <div id="poweroff-screen" class="poweroff-screen hidden" aria-hidden="true">
+      <div class="poweroff-text">Теперь питание компьютера можно отключить</div>
+    </div>
+
+    <footer id="taskbar" class="taskbar">
+      <button id="start-btn" class="start-btn" type="button" aria-expanded="false">
+        <span>🪟</span>
+        <span>Пуск</span>
+      </button>
+      <div id="task-buttons" class="task-buttons" aria-label="Открытые окна"></div>
+      <div class="tray">
+        <span class="tray-sep" aria-hidden="true"></span>
+        <span id="clock" class="clock"></span>
+      </div>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
